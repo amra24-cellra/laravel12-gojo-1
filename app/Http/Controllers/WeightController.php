@@ -2,20 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Weight;
-
-class WeightController extends Controller
-{
-    //
-}
-
-namespace App\Http\Controllers;
-
 use App\Models\Weight;
 use Illuminate\Http\Request;
 
-class WeightController extends Controller
+class WeightController
 {
     public function index()
     {
@@ -26,13 +16,22 @@ class WeightController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'weight' => 'required|numeric|min:1',
-            'recorded_date' => 'required|date'
-        ]);
+        try {
+            $request->validate([
+                'weight' => 'required|numeric|min:1',
+                'recorded_date' => 'required|date'
+            ]);
 
-        Weight::create($request->all());
-        return redirect()->back()->with('success', 'บันทึกข้อมูลสำเร็จ!');
+            $newWeight = new \App\Models\Weight();
+            $newWeight->recorded_date = $request->recorded_date;
+            $newWeight->weight = $request->weight;
+            $newWeight->save();
+
+            return redirect()->back()->with('success', 'บันทึกข้อมูลสำเร็จ!');
+        } catch (\Exception $e) {
+            // บรรทัดนี้จะสกัดเอาข้อความ Error ที่แท้จริงออกมาโชว์หน้าจอครับ!
+            dd($e->getMessage());
+        }
     }
 
     public function update(Request $request, $id)

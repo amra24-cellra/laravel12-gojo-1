@@ -8,14 +8,13 @@ use App\Models\Product;
 use App\Http\Controllers\WeightController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\LicenseController;  
-use App\Http\Controllers\UserController; 
-use App\Http\Controllers\VehicleController; 
+use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
 
 Route::resource('license', LicenseController::class);
 Route::resource('user', UserController::class);
 Route::resource('vehicle', VehicleController::class);
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/hello', function () {
     return view('hello');
@@ -49,7 +48,7 @@ Route::get('/gallery2', function () {
         "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_960_720.jpg",
         "https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg"
     ];
-    
+
     return view('gallery2', compact('images'));
 });
 
@@ -72,7 +71,7 @@ Route::get("/gallery", function () {
     $ant = "https://cdn3.movieweb.com/i/article/Oi0Q2edcVVhs4p1UivwyyseezFkHsq/1107:50/Ant-Man-3-Talks-Michael-Douglas-Update.jpg";
     $bird = "https://images.indianexpress.com/2021/03/falcon-anthony-mackie-1200.jpg";
     $cat = "https://media.newyorker.com/photos/5a875e3f33aebd0cab9bab12/master/w_2560%2Cc_limit/Brody-Passionate-Politics-Black-Panther.jpg";
-    
+
     // ส่งตัวแปรทั้งหมดไปที่หน้า index
     return view("test/index", compact("ant", "bird", "cat"));
 });
@@ -81,53 +80,46 @@ Route::get('/active/index', function () {
     return view('active/index');
 })->name('index');
 
-Route::get( '/active/about' , function () {
- return view('active/about');
+Route::get('/active/about', function () {
+    return view('active/about');
 })->name('about');
 
-Route::get( '/active/services' , function () {
- return view('active/services');
+Route::get('/active/services', function () {
+    return view('active/services');
 })->name('services');
 
-Route::get( '/active/portfolio' , function () {
- return view('active/portfolio');
-})->name('portfolio' );
+Route::get('/active/portfolio', function () {
+    return view('active/portfolio');
+})->name('portfolio');
 
-Route::get( '/active/team' , function () {
- return view('active/team');
+Route::get('/active/team', function () {
+    return view('active/team');
 })->name('team');
 
-Route::get( '/active/blog' , function () {
- return view('active/blog');
+Route::get('/active/blog', function () {
+    return view('active/blog');
 })->name('blog');
 
-Route::get( '/active/contact' , function () {
- return view('active/contact');
+Route::get('/active/contact', function () {
+    return view('active/contact');
 })->name('contact');
 
 Route::get('query/sql', function () {
     $products = DB::select("SELECT * FROM products");
-    // $products = DB::select("SELECT * FROM products WHERE price > 100");
     return view('query-test', compact('products'));
 });
 
 Route::get('query/builder', function () {
     $products = DB::table('products')->get();
-    // $products = DB::table('products')->where('price', '>', 100)->get();
     return view('query-test', compact('products'));
 });
 
-Route::get('query/orm', function () { 
-    $products = Product::get();  
-    // $products = Product::where('price', '>', 100)->get();
+Route::get('query/orm', function () {
+    $products = Product::get();
     return view('query-test', compact('products'));
 });
 
-// Route::get('product/form', function () {
-//     // ใส่ไว้กัน bugs
-// })->name("product.form");
-
-Route::get('barchart', function () {    
+Route::get('barchart', function () {
     return view('barchart');
 })->name('barchart');
 
@@ -137,36 +129,30 @@ Route::get('product-index', function () {
 })->name("product.index");
 
 
-Route::get('product-form', function () {    
+Route::get('product-form', function () {
     return view('product-form');
 })->name("product.form");
 
-Route::post('/product-submit', function (Request $request) {    
+Route::post('/product-submit', function (Request $request) {
     $data = $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'required|string',
         'price' => 'required|numeric|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);    
+    ]);
 
     // ตรวจสอบว่ามีการอัปโหลดรูปภาพ
     if ($request->hasFile('image')) {
         $imagePath = $request->file('image')->store('uploads', 'public');
         $url = Storage::url($imagePath);
-        $data["image"] =$url;
+        $data["image"] = $url;
     }
 
     // บันทึกข้อมูลในฐานข้อมูล
-    
-    Product::create($data); 
+    Product::create($data);
 
     return redirect()->route('product.index')->with('success', 'เพิ่มสินค้าแล้ว!');
 })->name('product.submit');
-
-Route::get('/', [WeightController::class, 'index'])->name('weights.index');
-Route::post('/weights', [WeightController::class, 'store'])->name('weights.store');
-Route::put('/weights/{id}', [WeightController::class, 'update'])->name('weights.update');
-Route::delete('/weights/{id}', [WeightController::class, 'destroy'])->name('weights.destroy');
 
 Route::get('/about-me', function () {
     return view('about-me');
